@@ -1,4 +1,4 @@
-import pyserial
+import serial
 
 class Devices:
     def __init__(self, portnum = None, DeviceName = None ):
@@ -13,7 +13,7 @@ class Devices:
                         parity      = serial.PARITY_NONE,
                         stopbits    = serial.STOPBITS_ONE,
                         timeout     = 1, #seconds
-                        writeTimeout= 1,
+                        writeTimeout= 1, #seconds
                         rtscts         = False 
                         ) 
             
@@ -32,9 +32,15 @@ class Devices:
             self.ser.close()
 
         
-    def switchBaudRate(self, newBaudRate):
-        self.ser.baudrate = newBaudRate
+    def updateName(self):
+        self.ser.open()
+	self.ser.write("CA\n")
+	self.name = ser.read(7).strip()
+        self.ser.close()
         
+    def getName(self):
+	return self.name
+
     def read(self, length, timeout = None):
         if timeout != self.ser.timeout:
             try:

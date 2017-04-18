@@ -13,7 +13,7 @@ import curses
 import traceback
 import time
 import subprocess
-
+from DevicesAPI import Devices
 
 ENTER_KEY = 13
 
@@ -54,6 +54,7 @@ PA_level_i = [0]*20
 gain_ctrl = [0]*12 + [[0, 50, 55, 60, 64, 70, 78, 128]]*4
 gain_ctrl_i = [0]*20
 
+Head = Devices.Devices("/dev/rfcomm0","test")
 
 x, y, len_x, len_y= 1, 1, 4, 5
 cursor_x = [(2+18*e) for e in range(len_x)]
@@ -136,6 +137,7 @@ if __name__ == "__main__":
 			elif c == 43: # '+' KEY
 				if y == 1:
 					write_value(index, x)
+					print Head.getName()
 				elif y == 2:
 					write_value(index, x)
 				elif y == 3:
