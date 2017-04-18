@@ -23,8 +23,8 @@ def restore_terminal():
 	curses.nocbreak()
 	curses.endwin()
 
-def write_value(key):
-	value_pad[key].addstr(0, 0, str(value[key]))
+def write_value(key,data):
+	value_pad[key].addstr(0, 0, str(data))
 	value_pad[key].clrtoeol()
 
 def comb_amplifier():
@@ -55,7 +55,7 @@ gain_ctrl = [0]*12 + [[0, 50, 55, 60, 64, 70, 78, 128]]*4
 gain_ctrl_i = [0]*20
 
 
-x, y, len_x, len_y= 0, 0, 4, 5
+x, y, len_x, len_y= 1, 1, 4, 5
 cursor_x = [(2+18*e) for e in range(len_x)]
 cursor_y = [(3+2*e) for e in range(len_y)]
 LENGTH = 3+2*len_y
@@ -69,18 +69,28 @@ if __name__ == "__main__":
 		stdscr.keypad(1)
 		curses.nonl()
 		curses.start_color()
-		curses.init_pair("GR", curses.COLOR_GREEN, curses.COLOR_BLACK)
-		curses.init_pair(RE, curses.COLOR_RED, curses.COLOR_BLACK)
+		curses.init_pair(1, curses.COLOR_GREEN, curses.COLOR_BLACK)
+		curses.init_pair(2, curses.COLOR_RED, curses.COLOR_BLACK)
+		curses.init_pair(3, curses.COLOR_CYAN, curses.COLOR_BLACK)
+		curses.init_pair(4, curses.COLOR_BLUE, curses.COLOR_BLACK)
+		curses.init_pair(5, curses.COLOR_YELLOW, curses.COLOR_BLACK)
+		curses.init_pair(6, curses.COLOR_MAGENTA, curses.COLOR_BLACK)
+		curses.init_pair(7, curses.COLOR_CYAN, curses.COLOR_BLACK)
+		curses.init_pair(8, curses.COLOR_MAGENTA, curses.COLOR_WHITE)
 		stdscr.refresh()
 		pad = curses.newpad(LENGTH, WIDTH+2)
 
 		pad.box()
-		pad.addstr(0, 1, "Device Sensor Calibration", curses.color_pair(GR))
+		pad.addstr(0, 1, "Device Sensor Calibration", curses.color_pair(1))
+
 		for i in range(len_y):
 			for j in range(len_x):
 				pad.addstr(cursor_y[i]-1, cursor_x[j], title[len_x*i+j], curses.A_BOLD)
 				value_pad[len_x*i+j] = pad.subpad(1,6, cursor_y[i],cursor_x[j])
-				value_pad[len_x*i+j].addstr(0, 0, "AT")
+                                if len_x*i+j < 2:
+				    value_pad[len_x*i+j].addstr(0, 0, "AT", curses.color_pair(6))
+                                else:
+				    value_pad[len_x*i+j].addstr(0, 0, "AT", curses.color_pair(7))
 		pad.addstr(LENGTH-1, 1, "Use arrows to navigate, +/- to increase/decrease value, Enter to confirm")
 		pad.refresh(0,0, 1,1, LENGTH,WIDTH+2)
 		
@@ -97,37 +107,32 @@ if __name__ == "__main__":
 			pad.refresh(0,0, 1,1, LENGTH,WIDTH+2)
 			c = stdscr.getch()
 			if c == curses.KEY_UP:
-				if x in [0, 1]:
+				if x == 1:
 					y = (y-1)%len_y
 				else:
 					y = (y+(len_y-3))%(len_y-1)+1
 			elif c == curses.KEY_DOWN:
-				if x in [0, 1]:
+				if x == 1:
 					y = (y+1)%len_y
 				else:
 					y = y%(len_y-1)+1
 			elif c == curses.KEY_RIGHT:
-				if y == 0:
-					x = (x+1)%2
+				if y == 1:
+					x = (x+1)%len_x
 				else:
 					x = (x+1)%len_x
 			elif c == curses.KEY_LEFT:
-				if y == 0:
-					x = (x-1)%2
+				if y == 1:
+					x = (x-1)%len_x
 				else:
 					x = (x-1)%len_x				
 			elif c == 43: # '+' KEY
 				if y == 2:
-					PA_level_i[index] = (PA_level_i[index] + 1)%len(PA_level[index])
-					value[index] = PA_level[index][PA_level_i[index]]
-					write_value(index)
+					write_value(index, x)
 				elif y == 3:
-					gain_ctrl_i[index] = (gain_ctrl_i[index] + 1)%len(gain_ctrl[index])
-					value[index] = gain_ctrl[index][gain_ctrl_i[index]]
-					write_value(index)
+					write_value(index, x)
 				elif y == 4:
-					value[index] += 0.1
-					write_value(index)
+					write_value(index, x)
 			elif c == 45: # '-' KEY
 				if y == 2:
 					PA_level_i[index] = (PA_level_i[index] - 1)%len(PA_level[index])
