@@ -1,8 +1,10 @@
 import pyserial
 
 class Devices:
-    def __init__(self, portnum = None ):
+    def __init__(self, portnum = None, DeviceName = None ):
         self.ser = None
+        self.name = DeviceName
+
         try:
             self.ser = serial.Serial(
                         port         = portnum,
