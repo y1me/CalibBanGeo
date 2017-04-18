@@ -73,10 +73,12 @@ if __name__ == "__main__":
 		curses.init_pair(2, curses.COLOR_RED, curses.COLOR_BLACK)
 		curses.init_pair(3, curses.COLOR_CYAN, curses.COLOR_BLACK)
 		curses.init_pair(4, curses.COLOR_BLUE, curses.COLOR_BLACK)
-		curses.init_pair(5, curses.COLOR_YELLOW, curses.COLOR_BLACK)
+		curses.init_pair(5, curses.COLOR_RED, curses.COLOR_GREEN)
 		curses.init_pair(6, curses.COLOR_MAGENTA, curses.COLOR_BLACK)
 		curses.init_pair(7, curses.COLOR_CYAN, curses.COLOR_BLACK)
 		curses.init_pair(8, curses.COLOR_MAGENTA, curses.COLOR_WHITE)
+		curses.init_pair(9, curses.COLOR_BLUE, curses.COLOR_WHITE)
+		curses.init_pair(10, curses.COLOR_GREEN, curses.COLOR_WHITE)
 		stdscr.refresh()
 		pad = curses.newpad(LENGTH, WIDTH+2)
 
@@ -88,9 +90,14 @@ if __name__ == "__main__":
 				pad.addstr(cursor_y[i]-1, cursor_x[j], title[len_x*i+j], curses.A_BOLD)
 				value_pad[len_x*i+j] = pad.subpad(1,6, cursor_y[i],cursor_x[j])
                                 if len_x*i+j < 2:
-				    value_pad[len_x*i+j].addstr(0, 0, "AT", curses.color_pair(6))
-                                else:
-				    value_pad[len_x*i+j].addstr(0, 0, "AT", curses.color_pair(7))
+				    value_pad[len_x*i+j].addstr(0, 0, "AT", curses.color_pair(3))
+                                elif len_x*i+j in [ 2, 3 ]:
+				    value_pad[len_x*i+j].addstr(0, 0, "AT", curses.color_pair(5))
+				elif (len_x*i+j)%4 == 0:
+				    value_pad[len_x*i+j].addstr(0, 0, "AT", curses.color_pair(5))
+				else:
+				    value_pad[len_x*i+j].addstr(0, 0, "AT", curses.color_pair(1))
+
 		pad.addstr(LENGTH-1, 1, "Use arrows to navigate, +/- to increase/decrease value, Enter to confirm")
 		pad.refresh(0,0, 1,1, LENGTH,WIDTH+2)
 		
@@ -107,32 +114,34 @@ if __name__ == "__main__":
 			pad.refresh(0,0, 1,1, LENGTH,WIDTH+2)
 			c = stdscr.getch()
 			if c == curses.KEY_UP:
-				if x == 1:
-					y = (y-1)%len_y
+				if y <= 1:
+					y = (len_y - 1)
 				else:
-					y = (y+(len_y-3))%(len_y-1)+1
+					y -=1
 			elif c == curses.KEY_DOWN:
-				if x == 1:
-					y = (y+1)%len_y
+				if y >= (len_y - 1):
+					y = 1
 				else:
-					y = y%(len_y-1)+1
+					y += 1
 			elif c == curses.KEY_RIGHT:
-				if y == 1:
-					x = (x+1)%len_x
+				if x >= (len_x - 1):
+					x = 1
 				else:
-					x = (x+1)%len_x
+					x += 1
 			elif c == curses.KEY_LEFT:
-				if y == 1:
-					x = (x-1)%len_x
+				if x <= 1:
+					x = (len_x - 1)
 				else:
-					x = (x-1)%len_x				
+					x -= 1 				
 			elif c == 43: # '+' KEY
-				if y == 2:
+				if y == 1:
+					write_value(index, x)
+				elif y == 2:
 					write_value(index, x)
 				elif y == 3:
-					write_value(index, x)
+					write_value(index, index)
 				elif y == 4:
-					write_value(index, x)
+					write_value(index, y)
 			elif c == 45: # '-' KEY
 				if y == 2:
 					PA_level_i[index] = (PA_level_i[index] - 1)%len(PA_level[index])
