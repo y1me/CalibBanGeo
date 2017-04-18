@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""Servomotor calibration on a assembled MobiOne.
+"""Head calibration.
 
-Manual control of the servomotor. Allows saving the settings.
-The user interface allows to set the values for high position, low position and delay of opening.
 """
 
 import sys
@@ -65,7 +63,7 @@ try:
     pad.addstr(3, 21, str(high_pos))
     pad.addstr(2, 41, "Delay setting", curses.A_BOLD)
     pad.addstr(3, 41, str(delay))
-    pad.addstr(5, 38, "Save and exit [X]", curses.A_BOLD)
+    pad.addstr(19, 38, "Save and exit [X]", curses.A_BOLD)
     pad.refresh(0,0, 1,1, 30,57)
 
     while True:
