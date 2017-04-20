@@ -24,8 +24,16 @@ def restore_terminal():
 	curses.endwin()
 
 def write_value(key,data):
-	value_pad[key].addstr(0, 0, str(data))
-	value_pad[key].clrtoeol()
+
+        if key < 2:
+            value_pad[key].addstr(0, 0, data, curses.color_pair(3))
+        elif key in [ 2, 3 ]:
+            value_pad[key].addstr(0, 0, data, curses.color_pair(5))
+        elif (key)%4 == 0:
+            value_pad[key].addstr(0, 0, data, curses.color_pair(5))
+        else:
+            value_pad[key].addstr(0, 0, data, curses.color_pair(1))
+        value_pad[key].clrtoeol()
 
 def comb_amplifier():
         time.sleep(0.2)
@@ -48,19 +56,18 @@ title 	= ['Device Name', 'Port', 'Battery Voltage', 'Battery Temperature',
 			'Sensor 1 Value', 'S1 Zero', 'S1 Low value', 'S1 High Value',
 			'Sensor 2 Value', 'S2 Zero', 'S2 Low value', 'S2 High Value',
 			'Sensor 3 Value', 'S3 Zero', 'S3 Low value', 'S3 High Value']
-value_pad = [0]*20
-PA_level = [0]*8 + [range(0, 159, 10) + [159]]*4
-PA_level_i = [0]*20
-gain_ctrl = [0]*12 + [[0, 50, 55, 60, 64, 70, 78, 128]]*4
-gain_ctrl_i = [0]*20
 
 Head = Devices.Devices("/dev/rfcomm0","test")
+
+value_pad = [0]*20
 
 x, y, len_x, len_y= 1, 1, 4, 5
 cursor_x = [(2+18*e) for e in range(len_x)]
 cursor_y = [(3+2*e) for e in range(len_y)]
 LENGTH = 3+2*len_y
 WIDTH = 3+18*len_x
+PAD_MIN = 1
+PAD_MAX = 15
 
 if __name__ == "__main__":
 	try:
@@ -89,7 +96,7 @@ if __name__ == "__main__":
 		for i in range(len_y):
 			for j in range(len_x):
 				pad.addstr(cursor_y[i]-1, cursor_x[j], title[len_x*i+j], curses.A_BOLD)
-				value_pad[len_x*i+j] = pad.subpad(1,6, cursor_y[i],cursor_x[j])
+				value_pad[len_x*i+j] = pad.subpad(PAD_MIN, PAD_MAX, cursor_y[i],cursor_x[j])
                                 if len_x*i+j < 2:
 				    value_pad[len_x*i+j].addstr(0, 0, "AT", curses.color_pair(3))
                                 elif len_x*i+j in [ 2, 3 ]:
@@ -101,13 +108,14 @@ if __name__ == "__main__":
 
 		pad.addstr(LENGTH-1, 1, "Use arrows to navigate, +/- to increase/decrease value, Enter to confirm")
 		pad.refresh(0,0, 1,1, LENGTH,WIDTH+2)
-		
-		# Set all the parameters to initial state. The first execution toggles the power, the second execution applies what we want.
-		comb_amplifier()
-		comb_amplifier()
-		single_spike()
-		single_spike()
-		
+	
+                Head.updateName()
+                Head.updateBattData()
+        	write_value(1,Head.getPortName())
+        	write_value(0,Head.getName())
+	        
+                x=1
+                y=1
 
 		while True:
 			pad.move(cursor_y[y], cursor_x[x])
@@ -136,39 +144,35 @@ if __name__ == "__main__":
 					x -= 1 				
 			elif c == 43: # '+' KEY
 				if y == 1:
-					write_value(index, x)
-					print Head.getName()
+                                        Head.updateBattData()
+					write_value(index, str(Head.getTempBatt()) )
 				elif y == 2:
-					write_value(index, x)
+                                        Head.updateBattData()
+					write_value(index, str(Head.getVoltBatt()) )
 				elif y == 3:
 					write_value(index, index)
 				elif y == 4:
 					write_value(index, y)
 			elif c == 45: # '-' KEY
 				if y == 2:
-					PA_level_i[index] = (PA_level_i[index] - 1)%len(PA_level[index])
-					value[index] = PA_level[index][PA_level_i[index]]
-					write_value(index)
+					write_value(index, str(index))
 				elif y == 3:
-					gain_ctrl_i[index] = (gain_ctrl_i[index] - 1)%len(gain_ctrl[index])
-					value[index] = gain_ctrl[index][gain_ctrl_i[index]]
-					write_value(index)
+					write_value(index, str(index))
 				elif y == 4:
-					value[index] -= 0.1
-					write_value(index)
+					write_value(index, str(index))
 			elif c == ENTER_KEY:
 				if y == 0 and x == 0:
-					comb_amplifier()
+					write_value(index, str(index))
 				if y == 0 and x == 1:
-					single_spike()
+					write_value(index, str(index))
 				elif y == 1:
-					SX_on_off(index)
+					write_value(index, str(index))
 				elif y == 2:
-					SX_on_off(index)
+					write_value(index, str(index))
 				elif y == 3:
-					SX_on_off(index)
+					write_value(index, str(index))
 				elif y == 4:
-					change_freq(SX, index-14, value[index])
+					write_value(index, str(index))
 	except:
 		# In event of error, restore terminal to sane state.
 		restore_terminal()
