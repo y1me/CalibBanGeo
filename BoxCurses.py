@@ -75,6 +75,7 @@ if __name__ == "__main__":
 		curses.noecho()
 		curses.cbreak()
 		stdscr.keypad(1)
+		stdscr.nodelay(1)
 		curses.nonl()
 		curses.start_color()
 		curses.init_pair(1, curses.COLOR_GREEN, curses.COLOR_BLACK)
@@ -109,18 +110,18 @@ if __name__ == "__main__":
 		pad.addstr(LENGTH-1, 1, "Use arrows to navigate, +/- to increase/decrease value, Enter to confirm")
 		pad.refresh(0,0, 1,1, LENGTH,WIDTH+2)
 	
-                Head.updateName()
-                Head.updateBattData()
         	write_value(1,Head.getPortName())
         	write_value(0,Head.getName())
 	        
-                x=1
-                y=1
-
 		while True:
 			pad.move(cursor_y[y], cursor_x[x])
 			index = len_x*y + x
 			pad.refresh(0,0, 1,1, LENGTH,WIDTH+2)
+
+                        batt = Head.getBattStat() 
+        	        write_value(2,str(batt[1]))
+        	        write_value(3,str(batt[3]))
+
 			c = stdscr.getch()
 			if c == curses.KEY_UP:
 				if y <= 1:
@@ -144,11 +145,9 @@ if __name__ == "__main__":
 					x -= 1 				
 			elif c == 43: # '+' KEY
 				if y == 1:
-                                        Head.updateBattData()
-					write_value(index, str(Head.getTempBatt()) )
+					write_value(index, str(index) )
 				elif y == 2:
-                                        Head.updateBattData()
-					write_value(index, str(Head.getVoltBatt()) )
+					write_value(index, str(index) )
 				elif y == 3:
 					write_value(index, index)
 				elif y == 4:

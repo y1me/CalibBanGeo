@@ -3,12 +3,9 @@ import serial, logging, collections, time
 class Devices:
     def __init__(self, portnum = None, DeviceName = None ):
         self.ser = None
-        self.name = DeviceName
-        self.portName = portnum
-        self.Tbat = None
-        self.Vbat = None
-        self.TbatRaw = None
-        self.VbatRaw = None
+        self.__name = DeviceName
+        self.__portName = portnum
+        self.__battStat = [0,0.0,0,0.0]
         try:
             self.ser = serial.Serial(
                         port         = portnum,
@@ -35,36 +32,29 @@ class Devices:
             logging.info("closing UART")
             self.ser.close()
 
-    def updateBattData(self):
+    def __updateBattData(self):
 	x = self.ser.write("CF\n")
         time.sleep(0.01)
         y = self.ser.read(8)
-        self.TbatRaw = ord(y[3]) + (256 * ord(y[4]) )
-        self.VbatRaw = ord(y[5]) + (256 * ord(y[6])) 
-        self.Tbat = round( (((float(self.TbatRaw)/1024*4.096)-0.4)/0.0195),1 )
-        self.Vbat = round( ((float(self.VbatRaw)/1024*4.096)/0.352),2 )
+        self.__battStat[0] = ord(y[3]) + (256 * ord(y[4]) )
+        self.__battStat[2] = ord(y[5]) + (256 * ord(y[6])) 
+        self.__battStat[1] = round( (((float(self.__battStat[0])/1024*4.096)-0.4)/0.0195),1 )
+        self.__battStat[3] = round( ((float(self.__battStat[2])/1024*4.096)/0.352),2 )
         
-    def updateName(self):
-	x = self.ser.write("CA\n")
+    def __updateName(self):
+	self.ser.write("CA\n")
         time.sleep(0.01)
         y = self.ser.read(7)
 	self.name = str(y).strip()
         
     def getName(self):
-	return self.name
+        self.__updateName()
+	return self.__name
 
-    def getTempBatt(self):
-	return self.Tbat
-
-    def getVoltBatt(self):
-	return self.Vbat
-
-    def getTempBattRaw(self):
-	return self.TbatRaw
-
-    def getVoltBattRaw(self):
-	return self.VbatRaw
+    def getBattStat(self):
+        self.__updateBattData()
+	return self.__battStat
 
     def getPortName(self):
-	return self.portName
+	return self.__portName
 
