@@ -13,6 +13,7 @@ import curses
 import traceback
 import time
 import subprocess
+import argparse
 from DevicesAPI import Devices
 
 ENTER_KEY = 13
@@ -35,21 +36,6 @@ def write_value(key,data):
             value_pad[key].addstr(0, 0, data, curses.color_pair(1))
         value_pad[key].clrtoeol()
 
-def comb_amplifier():
-        time.sleep(0.2)
-
-def single_spike():
-        time.sleep(0.2)
-
-def set_SX(SX_key):
-        time.sleep(0.2)
-
-def SX_on_off(key):
-        time.sleep(0.2)
-
-def change_freq(SX, key, freq):
-        time.sleep(0.2)
-
 #dictionnary declarations
 title 	= ['Device Name', 'Port', 'Battery Voltage', 'Battery Temperature', 
 			'Sensor 0 Value', 'S0 Zero', 'S0 Low value', 'S0 High Value',
@@ -57,7 +43,11 @@ title 	= ['Device Name', 'Port', 'Battery Voltage', 'Battery Temperature',
 			'Sensor 2 Value', 'S2 Zero', 'S2 Low value', 'S2 High Value',
 			'Sensor 3 Value', 'S3 Zero', 'S3 Low value', 'S3 High Value']
 
-Head = Devices.Devices("/dev/rfcomm0","test")
+parser = argparse.ArgumentParser(description='Angular sensor calibration script')
+parser.add_argument('ttyport',type=str,
+                                help='input tty device')
+args = parser.parse_args()
+Head = Devices.Devices(args.ttyport,"test")
 
 value_pad = [0]*20
 
@@ -68,9 +58,10 @@ LENGTH = 3+2*len_y
 WIDTH = 3+18*len_x
 PAD_MIN = 1
 PAD_MAX = 15
-
 dec = 0
 LOOP = 50
+STARTADDEEPROM = '0'
+k_index = [5,9,13,17,6,10,14,18,7,11,15,19]
 
 if __name__ == "__main__":
 	try:
@@ -110,11 +101,13 @@ if __name__ == "__main__":
 				else:
 				    value_pad[len_x*i+j].addstr(0, 0, "AT", curses.color_pair(1))
 
-		pad.addstr(LENGTH-1, 1, "Use arrows to navigate, +/- to increase/decrease value, Enter to confirm")
+		pad.addstr(LENGTH-1, 1, "Use arrows to navigate, press Enter to set value read in eeprom")
 		pad.refresh(0,0, 1,1, LENGTH,WIDTH+2)
 	
         	write_value(1,Head.getPortName())
         	write_value(0,Head.getName())
+                for k in range(12):
+		    write_value(k_index[k],str(Head.ReadCalib(chr(ord(STARTADDEEPROM)+k))))
 	        
 		while True:
 			pad.move(cursor_y[y], cursor_x[x])
@@ -155,35 +148,24 @@ if __name__ == "__main__":
 					x = (len_x - 1)
 				else:
 					x -= 1 				
-			elif c == 43: # '+' KEY
-				if y == 1:
-					write_value(index, str(index) )
-				elif y == 2:
-					write_value(index, str(index) )
-				elif y == 3:
-					write_value(index, index)
-				elif y == 4:
-					write_value(index, y)
-			elif c == 45: # '-' KEY
-				if y == 2:
-					write_value(index, str(index))
-				elif y == 3:
-					write_value(index, str(index))
-				elif y == 4:
-					write_value(index, str(index))
+			elif c == ord('u'): 
+                            for k in range(12):
+			        write_value(k_index[k],str(Head.ReadCalib(chr(ord(STARTADDEEPROM)+k))))
+                                
 			elif c == ENTER_KEY:
-				if y == 0 and x == 0:
-					write_value(index, str(index))
-				if y == 0 and x == 1:
-					write_value(index, str(index))
-				elif y == 1:
-					write_value(index, str(index))
-				elif y == 2:
-					write_value(index, str(index))
-				elif y == 3:
-					write_value(index, str(index))
-				elif y == 4:
-					write_value(index, str(index))
+                            write_value(index,"confirm? [y]")
+			    pad.refresh(0,0, 1,1, LENGTH,WIDTH+2)
+                            for k in range(12):
+                                if k_index[k] == index:
+		                    stdscr.nodelay(0)
+                                    c = stdscr.getch()
+                                    if c == ord('y'): 
+                                        Head.WriteCalib(chr(ord(STARTADDEEPROM)+k))
+                                        time.sleep(0.1) 
+                                        write_value(k_index[k],str(Head.ReadCalib(chr(ord(STARTADDEEPROM)+k))))
+                                    else:
+                                        write_value(k_index[k],str(Head.ReadCalib(chr(ord(STARTADDEEPROM)+k))))
+		                    stdscr.nodelay(True)
 	except:
 		# In event of error, restore terminal to sane state.
 		restore_terminal()

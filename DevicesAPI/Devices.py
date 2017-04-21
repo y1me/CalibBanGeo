@@ -66,7 +66,7 @@ class Devices:
         i = 0
         while(i < 4):
             self.__anlgInput[i] = ord(y[2*i+3]) + (256 * ord(y[2*i+4]) )
-            if self.__anlgInput[i] >= 32768:
+            if self.__anlgInput[i] > 32768:
                  self.__anlgInput[i] -= 65536
             i += 1
         i = 0
@@ -78,11 +78,16 @@ class Devices:
         self.__updateInputData()
 	return self.__anlgInput
 
+    def WriteCalib(self,Address):
+        x = self.ser.write("CH"+Address+"\n")
+        time.sleep(0.015)
 
-
-
-
-
-
-
+    def ReadCalib(self,Address):
+        x = self.ser.write("CK"+Address+"\n")
+        time.sleep(0.015)
+        y = self.ser.read(6)
+        value = ord(y[4]) + (256 * ord(y[3]))
+        if value > 32768:
+            value -= 65536
+        return value
 
