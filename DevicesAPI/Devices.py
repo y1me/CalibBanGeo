@@ -45,7 +45,7 @@ class Devices:
 	self.ser.write("CA\n")
         time.sleep(0.01)
         y = self.ser.read(7)
-	self.name = str(y).strip()
+	self.__name = str(y).strip()
         
     def getName(self):
         self.__updateName()

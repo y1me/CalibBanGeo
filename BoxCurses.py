@@ -69,6 +69,9 @@ WIDTH = 3+18*len_x
 PAD_MIN = 1
 PAD_MAX = 15
 
+dec = 0
+LOOP = 50
+
 if __name__ == "__main__":
 	try:
 		stdscr = curses.initscr()
@@ -117,11 +120,15 @@ if __name__ == "__main__":
 			pad.move(cursor_y[y], cursor_x[x])
 			index = len_x*y + x
 			pad.refresh(0,0, 1,1, LENGTH,WIDTH+2)
-
-                        batt = Head.getBattStat() 
-        	        write_value(2,str(batt[1]))
-        	        write_value(3,str(batt[3]))
-
+                        
+                        if dec == 1 :
+                            batt = Head.getBattStat() 
+        	            write_value(3,str(batt[1])+"°C/ "+str(batt[0]))
+        	            write_value(2,str(batt[3])+"V/"+str(round((batt[3]/6),2))+"V")
+                        if dec == LOOP :
+                            dec = 0
+                        time.sleep(0.01) 
+                        dec += 1
 			c = stdscr.getch()
 			if c == curses.KEY_UP:
 				if y <= 1:
