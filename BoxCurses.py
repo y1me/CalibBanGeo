@@ -125,6 +125,11 @@ if __name__ == "__main__":
                             batt = Head.getBattStat() 
         	            write_value(3,str(batt[1])+"°C/ "+str(batt[0]))
         	            write_value(2,str(batt[3])+"V/"+str(round((batt[3]/6),2))+"V")
+                            AIN = Head.getAnalogIN()
+                            for i in range(4):
+                                write_value(4*i+4,str(AIN[i])+"/"+str(AIN[i+4])+"V")
+
+
                         if dec == LOOP :
                             dec = 0
                         time.sleep(0.01) 

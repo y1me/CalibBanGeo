@@ -6,6 +6,7 @@ class Devices:
         self.__name = DeviceName
         self.__portName = portnum
         self.__battStat = [0,0.0,0,0.0]
+        self.__anlgInput = [0,0,0,0,0.0,0.0,0.0,0.0]
         try:
             self.ser = serial.Serial(
                         port         = portnum,
@@ -57,4 +58,31 @@ class Devices:
 
     def getPortName(self):
 	return self.__portName
+
+    def __updateInputData(self):
+	x = self.ser.write("CG\n")
+        time.sleep(0.015)
+        y = self.ser.read(12)
+        i = 0
+        while(i < 4):
+            self.__anlgInput[i] = ord(y[2*i+3]) + (256 * ord(y[2*i+4]) )
+            if self.__anlgInput[i] >= 32768:
+                 self.__anlgInput[i] -= 65536
+            i += 1
+        i = 0
+        while(i < 4):
+            self.__anlgInput[i+4] = round(( float(self.__anlgInput[i])/32767*4.096 ),5)
+            i += 1
+
+    def getAnalogIN(self):
+        self.__updateInputData()
+	return self.__anlgInput
+
+
+
+
+
+
+
+
 

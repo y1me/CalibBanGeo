@@ -19,13 +19,6 @@ ENTER_KEY = 13
 
 Head = Devices.Devices("/dev/rfcomm0","test")
 
-Head.updateName()
-Head.updateBattData()
 print Head.getPortName()
 print Head.getName()
-	        
-Head.updateBattData()
-print Head.getTempBatt()
-print Head.getVoltBatt()
-print str(Head.getTempBattRaw())
-print str(Head.getVoltBattRaw())
+print Head.getAnalogIN()
