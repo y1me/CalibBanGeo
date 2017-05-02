@@ -14,8 +14,8 @@ class Devices:
                         bytesize    = serial.EIGHTBITS,
                         parity      = serial.PARITY_NONE,
                         stopbits    = serial.STOPBITS_ONE,
-                        timeout     = 3, #seconds
-                        writeTimeout= 1, #seconds
+                        timeout     = 5, #seconds
+                        writeTimeout= 5, #seconds
                         rtscts         = False 
                         ) 
             
