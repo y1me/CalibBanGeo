@@ -17,12 +17,8 @@ from DevicesAPI import Devices
 
 ENTER_KEY = 13
 
-Head = Devices.Devices("/dev/rfcomm0","test")
 
-print Head.getPortName()
-print Head.getName()
-print Head.getAnalogIN()
-print Head.WriteCalib(':')
-print Head.ReadCalib('1')
-print Head.ReadCalib('2')
-print type(Head.ReadCalib('3'))
+raw_input("press enter key to continue")
+
+print "end"
+
