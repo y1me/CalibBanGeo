@@ -43,11 +43,14 @@ title 	= ['Device Name', 'Port', 'Battery Voltage', 'Battery Temperature',
 			'Sensor 2 Value', 'S2 Zero', 'S2 Low value', 'S2 High Value',
 			'Sensor 3 Value', 'S3 Zero', 'S3 Low value', 'S3 High Value']
 
-parser = argparse.ArgumentParser(description='Angular sensor calibration script')
-parser.add_argument('ttyport',type=str,
+parser = argparse.ArgumentParser(description='2 Head control script')
+parser.add_argument('ttyport1',type=str,
+                                help='input tty device')
+parser.add_argument('ttyport2',type=str,
                                 help='input tty device')
 args = parser.parse_args()
-Head = Devices.Devices(args.ttyport,"test")
+Head1 = Devices.Devices(args.ttyport1,"test")
+Head2 = Devices.Devices(args.ttyport2,"test")
 
 value_pad = [0]*20
 
@@ -62,8 +65,47 @@ dec = 0
 LOOP = 50
 STARTADDEEPROM = '0'
 k_index = [5,9,13,17,6,10,14,18,7,11,15,19]
-print "test"
-print Head.getCalibValue()
+print "Script mesure 2 têtes"
+print "Initialisation : dévoilage des roues"
+print "Positionner les têtes et relier les capteurs"
+print ""
+print "Dévoilage roue munie de la tête : " + Head1.getName()
+raw_input("appuyer sur entrée pour continuer")
+print ""
+print "Mesure en cours...."
+a = Head1.getAnalogIN()
+refS0 = a[0]
+refS1 = a[1]
+refS2 = a[2]
+refS3 = a[3]
+time.sleep(1)
+for k in range(4):
+    a = Head1.getAnalogIN()
+    print "Deviation S0 : " + str(abs(a[0]-refS0))
+    if abs(a[0]-refS0) >= 3:
+        print "Capteur parallélisme instable"
+    print "Deviation S1 : " + str(abs(a[1]-refS1))
+    if abs(a[1]-refS1) >= 3:
+        print "Capteur carrosage instable"
+    print "Deviation S2 : " + str(abs(a[2]-refS2))
+    if abs(a[2]-refS2) >= 3:
+        print "Capteur alignement essieu instable"
+    print "Deviation S3 : " + str(abs(a[3]-refS3))
+    if abs(a[3]-refS3) >= 3:
+        print "Capteur assiette instable"
+    time.sleep(1)
+
+
+
+
+print Head1.getName()
+print Head2.getName()
+print Head1.getCalibValue()
+print Head1.getZeroValue()
+print Head1.getSensiValue()
+a = Head1.getAnalogIN()
+print a
+print a[:4]
 raw_input("press enter key to continue")
 if __name__ == "__main__":
 	try:

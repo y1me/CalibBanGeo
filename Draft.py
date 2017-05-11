@@ -19,6 +19,7 @@ ENTER_KEY = 13
 
 
 raw_input("press enter key to continue")
-
+for k in range(12):
+    print k
 print "end"
 

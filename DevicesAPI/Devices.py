@@ -11,6 +11,8 @@ class Devices:
         self.__battStat = [0,0.0,0,0.0]
         self.__anlgInput = [0,0,0,0,0.0,0.0,0.0,0.0]
         self.__calibValue = []
+        self.__Zero = []
+        self.__Sensi = []
         try:
             self.ser = serial.Serial(
                         port         = portnum,
@@ -54,7 +56,7 @@ class Devices:
         
     def getName(self):
         self.__updateName()
-	return self.__name
+        return self.__name[3:]
 
     def getBattStat(self):
         self.__updateBattData()
@@ -97,9 +99,22 @@ class Devices:
 
     def __updateCalib(self):
         self.__calibValue = []
+        self.__Zero = []
+        self.__Sensi = []
         for k in range(12):
             self.__calibValue.append( self.ReadCalib(chr(ord(STARTADDEEPROM)+k)) )
+        for k in range(4):
+            self.__Zero.append( self.__calibValue[k] )
+            self.__Sensi.append( (self.__calibValue[k + 8] -  self.__calibValue[k + 4]) / MAGICCALIBANGLE )   
     
     def getCalibValue(self):
         self.__updateCalib()
         return self.__calibValue
+    
+    def getZeroValue(self):
+        self.__updateCalib()
+        return self.__Zero
+    
+    def getSensiValue(self):
+        self.__updateCalib()
+        return self.__Sensi
