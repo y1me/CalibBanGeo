@@ -13,6 +13,7 @@ class Devices:
         self.__calibValue = []
         self.__Zero = []
         self.__Sensi = []
+        self.__DeltaS = []
         try:
             self.ser = serial.Serial(
                         port         = portnum,
@@ -118,3 +119,11 @@ class Devices:
     def getSensiValue(self):
         self.__updateCalib()
         return self.__Sensi
+
+    def updateDeltaS(self,DeltaValue):
+        self.__DeltaS = DeltaValue
+
+    def getDeltaS(self):
+        return self.__DeltaS
+
+

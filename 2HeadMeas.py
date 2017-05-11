@@ -37,11 +37,11 @@ def write_value(key,data):
         value_pad[key].clrtoeol()
 
 #dictionnary declarations
-title 	= ['Device Name', 'Port', 'Battery Voltage', 'Battery Temperature', 
-			'Sensor 0 Value', 'S0 Zero', 'S0 Low value', 'S0 High Value',
-			'Sensor 1 Value', 'S1 Zero', 'S1 Low value', 'S1 High Value',
-			'Sensor 2 Value', 'S2 Zero', 'S2 Low value', 'S2 High Value',
-			'Sensor 3 Value', 'S3 Zero', 'S3 Low value', 'S3 High Value']
+title 	= ['Rien', 'Tete', 'Total', 'Tete', 
+			'Parallelisme', 'Valeur', 'Valeur', 'Valeur',
+			'Chasse', 'Valeur', 'Rien', 'Valeur',
+			'Essieu', 'Valeur', 'Rien', 'Valeur',
+			'Assiette', 'Valeur', 'Rien', 'Valeur']
 
 parser = argparse.ArgumentParser(description='2 Head control script')
 parser.add_argument('ttyport1',type=str,
@@ -70,16 +70,18 @@ print "Initialisation : dévoilage des roues"
 print "Positionner les têtes et relier les capteurs"
 print ""
 print "Dévoilage roue munie de la tête : " + Head1.getName()
+print "Réglez l'assiette de la roue munie de : " + Head1.getName()
 raw_input("appuyer sur entrée pour continuer")
 print ""
 print "Mesure en cours...."
+
 a = Head1.getAnalogIN()
 refS0 = a[0]
 refS1 = a[1]
 refS2 = a[2]
 refS3 = a[3]
 time.sleep(1)
-for k in range(4):
+for k in range(6):
     a = Head1.getAnalogIN()
     print "Deviation S0 : " + str(abs(a[0]-refS0))
     if abs(a[0]-refS0) >= 3:
@@ -94,18 +96,139 @@ for k in range(4):
     if abs(a[3]-refS3) >= 3:
         print "Capteur assiette instable"
     time.sleep(1)
-
-
-
-
-print Head1.getName()
-print Head2.getName()
-print Head1.getCalibValue()
-print Head1.getZeroValue()
-print Head1.getSensiValue()
+DeltaS = []
+DeltaS.append(float(a[0]))
+DeltaS.append(float(a[1]))
+DeltaS.append(float(a[2]))
+DeltaS.append(float(a[3]))
+print DeltaS
+print ""
+print "Tournez d'un demi-tour la roue munie de la tête : " + Head1.getName()
+print "Réglez l'assiette de la roue munie de : " + Head1.getName()
+raw_input("appuyer sur entrée pour continuer")
 a = Head1.getAnalogIN()
+refS0 = a[0]
+refS1 = a[1]
+refS2 = a[2]
+refS3 = a[3]
+time.sleep(1)
+for k in range(6):
+    a = Head1.getAnalogIN()
+    print "Deviation S0 : " + str(abs(a[0]-refS0))
+    if abs(a[0]-refS0) >= 3:
+        print "Capteur parallélisme instable"
+    print "Deviation S1 : " + str(abs(a[1]-refS1))
+    if abs(a[1]-refS1) >= 3:
+        print "Capteur carrosage instable"
+    print "Deviation S2 : " + str(abs(a[2]-refS2))
+    if abs(a[2]-refS2) >= 3:
+        print "Capteur alignement essieu instable"
+    print "Deviation S3 : " + str(abs(a[3]-refS3))
+    if abs(a[3]-refS3) >= 3:
+        print "Capteur assiette instable"
+    time.sleep(1)
 print a
-print a[:4]
+print ""
+DeltaS[0] -= float(a[0])
+DeltaS[0] /= 2
+DeltaS[1] -= float(a[1])
+DeltaS[1] /= 2
+DeltaS[2] -= float(a[2])
+DeltaS[2] /= 2
+DeltaS[3] -= float(a[3])
+DeltaS[3] /= 2
+Head1.updateDeltaS(DeltaS)
+print "valeurs de correction du voile obtenues :" 
+print Head1.getDeltaS()
+print "Fin de la séquence de dévoilage de la roue munie de la tête : " + Head1.getName()
+
+print ""
+print "Dévoilage roue munie de la tête : " + Head2.getName()
+print "Réglez l'assiette de la roue munie de : " + Head2.getName()
+raw_input("appuyer sur entrée pour continuer")
+print ""
+print "Mesure en cours...."
+
+a = Head2.getAnalogIN()
+refS0 = a[0]
+refS1 = a[1]
+refS2 = a[2]
+refS3 = a[3]
+time.sleep(1)
+for k in range(6):
+    a = Head2.getAnalogIN()
+    print "Deviation S0 : " + str(abs(a[0]-refS0))
+    if abs(a[0]-refS0) >= 3:
+        print "Capteur parallélisme instable"
+    print "Deviation S1 : " + str(abs(a[1]-refS1))
+    if abs(a[1]-refS1) >= 3:
+        print "Capteur carrosage instable"
+    print "Deviation S2 : " + str(abs(a[2]-refS2))
+    if abs(a[2]-refS2) >= 3:
+        print "Capteur alignement essieu instable"
+    print "Deviation S3 : " + str(abs(a[3]-refS3))
+    if abs(a[3]-refS3) >= 3:
+        print "Capteur assiette instable"
+    time.sleep(1)
+DeltaS = []
+DeltaS.append(float(a[0]))
+DeltaS.append(float(a[1]))
+DeltaS.append(float(a[2]))
+DeltaS.append(float(a[3]))
+print DeltaS
+print ""
+print "Tournez d'un demi-tour la roue munie de la tête : " + Head2.getName()
+print "Réglez l'assiette de la roue munie de : " + Head2.getName()
+raw_input("appuyer sur entrée pour continuer")
+a = Head2.getAnalogIN()
+refS0 = a[0]
+refS1 = a[1]
+refS2 = a[2]
+refS3 = a[3]
+time.sleep(1)
+for k in range(6):
+    a = Head2.getAnalogIN()
+    print "Deviation S0 : " + str(abs(a[0]-refS0))
+    if abs(a[0]-refS0) >= 3:
+        print "Capteur parallélisme instable"
+    print "Deviation S1 : " + str(abs(a[1]-refS1))
+    if abs(a[1]-refS1) >= 3:
+        print "Capteur carrosage instable"
+    print "Deviation S2 : " + str(abs(a[2]-refS2))
+    if abs(a[2]-refS2) >= 3:
+        print "Capteur alignement essieu instable"
+    print "Deviation S3 : " + str(abs(a[3]-refS3))
+    if abs(a[3]-refS3) >= 3:
+        print "Capteur assiette instable"
+    time.sleep(1)
+print a
+print ""
+DeltaS[0] -= float(a[0])
+DeltaS[0] /= 2
+DeltaS[1] -= float(a[1])
+DeltaS[1] /= 2
+DeltaS[2] -= float(a[2])
+DeltaS[2] /= 2
+DeltaS[3] -= float(a[3])
+DeltaS[3] /= 2
+
+Head2.updateDeltaS(DeltaS)
+print "valeurs de correction du voile obtenues :" 
+print Head2.getDeltaS()
+print "Fin de la séquence de dévoilage de la roue munie de la tête : " + Head2.getName()
+
+print ""
+print "Valeurs calibration : " + Head1.getName()
+print "Zero : "
+print Head1.getZeroValue()
+print "Sensibilité : "
+print Head1.getSensiValue()
+print ""
+print "Valeurs calibration : " + Head2.getName()
+print "Zero : "
+print Head2.getZeroValue()
+print "Sensibilité : "
+print Head2.getSensiValue()
 raw_input("press enter key to continue")
 if __name__ == "__main__":
 	try:
@@ -130,7 +253,7 @@ if __name__ == "__main__":
 		pad = curses.newpad(LENGTH, WIDTH+2)
 
 		pad.box()
-		pad.addstr(0, 1, "Device Sensor Calibration", curses.color_pair(1))
+		pad.addstr(0, 1, "Script mesure 2 tetes", curses.color_pair(1))
 
 		for i in range(len_y):
 			for j in range(len_x):
@@ -145,71 +268,27 @@ if __name__ == "__main__":
 				else:
 				    value_pad[len_x*i+j].addstr(0, 0, "AT", curses.color_pair(1))
 
-		pad.addstr(LENGTH-1, 1, "Use arrows to navigate, press Enter to set value read in eeprom")
+		pad.addstr(LENGTH-1, 1, "rien")
 		pad.refresh(0,0, 1,1, LENGTH,WIDTH+2)
 	
-        	write_value(1,Head.getPortName())
-        	write_value(0,Head.getName())
-                for k in range(12):
-		    write_value(k_index[k],str(Head.ReadCalib(chr(ord(STARTADDEEPROM)+k))))
+                write_value(4,"Brut/Angle")
+                write_value(8,"Brut/Angle")
+                write_value(12,"Brut/Angle")
+                write_value(16,"Brut/Angle")
 	        
 		while True:
-			pad.move(cursor_y[y], cursor_x[x])
-			index = len_x*y + x
 			pad.refresh(0,0, 1,1, LENGTH,WIDTH+2)
                         
                         if dec == 1 :
-                            batt = Head.getBattStat() 
-        	            write_value(3,str(batt[1])+"°C/ "+str(batt[0]))
-        	            write_value(2,str(batt[3])+"V/"+str(round((batt[3]/6),2))+"V")
-                            AIN = Head.getAnalogIN()
-                            for i in range(4):
-                                write_value(4*i+4,str(AIN[i])+"/"+str(AIN[i+4])+"V")
+        	            write_value(1,Head1.getName()) 
+        	            write_value(3,Head2.getName()) 
+                            AIN = Head1.getAnalogIN()
 
 
                         if dec == LOOP :
                             dec = 0
                         time.sleep(0.01) 
                         dec += 1
-			c = stdscr.getch()
-			if c == curses.KEY_UP:
-				if y <= 1:
-					y = (len_y - 1)
-				else:
-					y -=1
-			elif c == curses.KEY_DOWN:
-				if y >= (len_y - 1):
-					y = 1
-				else:
-					y += 1
-			elif c == curses.KEY_RIGHT:
-				if x >= (len_x - 1):
-					x = 1
-				else:
-					x += 1
-			elif c == curses.KEY_LEFT:
-				if x <= 1:
-					x = (len_x - 1)
-				else:
-					x -= 1 				
-			elif c == ord('u'): 
-                            for k in range(12):
-			        write_value(k_index[k],str(Head.ReadCalib(chr(ord(STARTADDEEPROM)+k))))
-                                
-			elif c == ENTER_KEY:
-                            write_value(index,"confirm? [y]")
-			    pad.refresh(0,0, 1,1, LENGTH,WIDTH+2)
-                            for k in range(12):
-                                if k_index[k] == index:
-		                    stdscr.nodelay(0)
-                                    c = stdscr.getch()
-                                    if c == ord('y'): 
-                                        Head.WriteCalib(chr(ord(STARTADDEEPROM)+k))
-                                        time.sleep(0.1) 
-                                        write_value(k_index[k],str(Head.ReadCalib(chr(ord(STARTADDEEPROM)+k))))
-                                    else:
-                                        write_value(k_index[k],str(Head.ReadCalib(chr(ord(STARTADDEEPROM)+k))))
-		                    stdscr.nodelay(True)
 	except:
 		# In event of error, restore terminal to sane state.
 		restore_terminal()
