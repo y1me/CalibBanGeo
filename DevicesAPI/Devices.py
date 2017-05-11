@@ -1,5 +1,8 @@
 import serial, logging, collections, time
 
+STARTADDEEPROM = '0'
+MAGICCALIBANGLE = 21.641
+
 class Devices:
     def __init__(self, portnum = None, DeviceName = None ):
         self.ser = None
@@ -7,6 +10,7 @@ class Devices:
         self.__portName = portnum
         self.__battStat = [0,0.0,0,0.0]
         self.__anlgInput = [0,0,0,0,0.0,0.0,0.0,0.0]
+        self.__calibValue = []
         try:
             self.ser = serial.Serial(
                         port         = portnum,
@@ -91,3 +95,11 @@ class Devices:
             value -= 65536
         return value
 
+    def __updateCalib(self):
+        self.__calibValue = []
+        for k in range(12):
+            self.__calibValue.append( self.ReadCalib(chr(ord(STARTADDEEPROM)+k)) )
+    
+    def getCalibValue(self):
+        self.__updateCalib()
+        return self.__calibValue

@@ -62,6 +62,8 @@ dec = 0
 LOOP = 50
 STARTADDEEPROM = '0'
 k_index = [5,9,13,17,6,10,14,18,7,11,15,19]
+print "test"
+print Head.getCalibValue()
 raw_input("press enter key to continue")
 if __name__ == "__main__":
 	try:
