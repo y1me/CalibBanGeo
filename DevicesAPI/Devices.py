@@ -14,6 +14,7 @@ class Devices:
         self.__Zero = []
         self.__Sensi = []
         self.__DeltaS = []
+        self.__Angle = []
         try:
             self.ser = serial.Serial(
                         port         = portnum,

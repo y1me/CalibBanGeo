@@ -270,19 +270,31 @@ if __name__ == "__main__":
 
 		pad.addstr(LENGTH-1, 1, "rien")
 		pad.refresh(0,0, 1,1, LENGTH,WIDTH+2)
+        
+                write_value(1,Head1.getName()) 
+        	write_value(3,Head2.getName()) 
 	
                 write_value(4,"Brut/Angle")
                 write_value(8,"Brut/Angle")
                 write_value(12,"Brut/Angle")
                 write_value(16,"Brut/Angle")
-	        
+	        ANGL = [0.0,0.0,0.0,0.0]
 		while True:
 			pad.refresh(0,0, 1,1, LENGTH,WIDTH+2)
                         
                         if dec == 1 :
-        	            write_value(1,Head1.getName()) 
-        	            write_value(3,Head2.getName()) 
                             AIN = Head1.getAnalogIN()
+                            Delta = Head1.getDeltaS()
+                            Zero = Head1.getZeroValue()
+                            Sensi = Head1.getSensiValue
+                            for k in range(4):
+                                ANGL[k] = (AIN[k]+Delta[k]-Zero[k])/
+
+
+                            write_value(5, str(AIN[0]))
+                            write_value(9, str(AIN[1]))
+                            write_value(13, str(AIN[2]))
+                            write_value(17, str(AIN[3]))
 
 
                         if dec == LOOP :
