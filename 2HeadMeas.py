@@ -26,6 +26,8 @@ def restore_terminal():
 
 def write_value(key,data):
 
+        data = data[:14]
+
         if key < 2:
             value_pad[key].addstr(0, 0, data, curses.color_pair(3))
         elif key in [ 2, 3 ]:
@@ -274,10 +276,10 @@ if __name__ == "__main__":
                 write_value(1,Head1.getName()) 
         	write_value(3,Head2.getName()) 
 	
-                write_value(4,"Brut/Angle")
-                write_value(8,"Brut/Angle")
-                write_value(12,"Brut/Angle")
-                write_value(16,"Brut/Angle")
+                write_value(4,"Angle")
+                write_value(8,"Angle")
+                write_value(12,"Angle")
+                write_value(16,"Angle")
 	        ANGL = [0.0,0.0,0.0,0.0]
                 DEG = [0,0,0,0]
                 MIN = [0,0,0,0]
@@ -293,21 +295,37 @@ if __name__ == "__main__":
                                 ANGL[k] = (AIN[k]+Delta[k]-Zero[k])/Sensi[k]
                                 DEG[k] = int(ANGL[k])
                                 MIN[k] = int(round((ANGL[k]-DEG[k])*60))
-                            write_value(5, str(AIN[0])  )
-                            write_value(9, str(AIN[1]))
-                            write_value(13, str(AIN[2]) +"/" + str(DEG[2]) + "d" + str(MIN[2])+ "m")
-                            write_value(17, str(AIN[3]))
+                            write_value(5, str(round(ANGL[0],2)) + "/" + str(DEG[0]) + "d" + str(MIN[0])+ "m"  )
+                            write_value(9, str(round(ANGL[1],2)) + "/" + str(DEG[1]) + "d" + str(MIN[1])+ "m"  )
+                            write_value(13, str(round(ANGL[2],2)) + "/" + str(DEG[2]) + "d" + str(MIN[2])+ "m"  )
+                            write_value(17, str(round(ANGL[3],2)) + "/" + str(DEG[3]) + "d" + str(MIN[3])+ "m"  )
 
-                            write_value(6, str(round(ANGL[0],4)))
-                            write_value(10, str(round(ANGL[1],4)))
-                            write_value(14, str(round(ANGL[2],4)))
-                            write_value(18, str(round(ANGL[3],4)))
+                            PTOT = ANGL[0]
+                            AIN = Head2.getAnalogIN()
+                            Delta = Head2.getDeltaS()
+                            Zero = Head2.getZeroValue()
+                            Sensi = Head2.getSensiValue()
+                            for k in range(4):
+                                ANGL[k] = (AIN[k]+Delta[k]-Zero[k])/Sensi[k]
+                                DEG[k] = int(ANGL[k])
+                                MIN[k] = int(round((ANGL[k]-DEG[k])*60))
                             
-                            write_value(7, str(DEG[0]) + "d" + str(MIN[0])+ "m")
-                            write_value(11, str(DEG[1]) + "d" + str(MIN[1])+ "m")
-                            write_value(15, str(DEG[2]) + "d" + str(MIN[2])+ "m")
-                            write_value(19, str(DEG[3]) + "d" + str(MIN[3])+ "m")
-
+                            write_value(7, str(round(ANGL[0],2)) + "/" + str(DEG[0]) + "d" + str(MIN[0])+ "m"  )
+                            write_value(11, str(round(ANGL[1],2)) + "/" + str(DEG[1]) + "d" + str(MIN[1])+ "m"  )
+                            write_value(15, str(round(ANGL[2],2)) + "/" + str(DEG[2]) + "d" + str(MIN[2])+ "m"  )
+                            write_value(19, str(round(ANGL[3],2)) + "/" + str(DEG[3]) + "d" + str(MIN[3])+ "m"  )
+                            
+                            
+                            PTOT += ANGL[0]
+                            DEG[0] = int(PTOT)
+                            MIN[0] = int(round((PTOT-DEG[0])*60))
+                            write_value(6, str(round(PTOT,2)) + "/" + str(DEG[0]) + "d" + str(MIN[0])+ "m"  )
+                            
+                            for k in range(4):
+                                ANGL[k] = (AIN[k]+Delta[k]-Zero[k])/Sensi[k]
+                                DEG[k] = int(ANGL[k])
+                                MIN[k] = int(round((ANGL[k]-DEG[k])*60))
+                            
 
                         if dec == LOOP :
                             dec = 0
