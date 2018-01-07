@@ -51,9 +51,9 @@ class Devices:
         self.__battStat[3] = round( ((float(self.__battStat[2])/1024*4.096)/0.352),2 )
         
     def __updateName(self):
-	self.ser.write("CA\n")
+	self.ser.write("CC\n")
         time.sleep(0.01)
-        y = self.ser.read(7)
+        y = self.ser.read(8)
 	self.__name = str(y).strip()
         
     def getName(self):
