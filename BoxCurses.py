@@ -107,7 +107,7 @@ if __name__ == "__main__":
         	write_value(1,Head.getPortName())
         	write_value(0,Head.getName())
                 for k in range(12):
-		    write_value(k_index[k],str(Head.ReadCalib(chr(ord(STARTADDEEPROM)+k))))
+		    write_value(k_index[k],str(Head.ReadCalib(chr(ord(STARTADDEEPROM)+(k*2)))))
 	        
 		while True:
 			pad.move(cursor_y[y], cursor_x[x])
@@ -150,7 +150,7 @@ if __name__ == "__main__":
 					x -= 1 				
 			elif c == ord('u'): 
                             for k in range(12):
-			        write_value(k_index[k],str(Head.ReadCalib(chr(ord(STARTADDEEPROM)+k))))
+			        write_value(k_index[k],str(Head.ReadCalib(chr(ord(STARTADDEEPROM)+(k*2)))))
                                 
 			elif c == ENTER_KEY:
                             write_value(index,"confirm? [y]")
@@ -160,11 +160,11 @@ if __name__ == "__main__":
 		                    stdscr.nodelay(0)
                                     c = stdscr.getch()
                                     if c == ord('y'): 
-                                        Head.WriteCalib(chr(ord(STARTADDEEPROM)+k))
-                                        time.sleep(0.1) 
-                                        write_value(k_index[k],str(Head.ReadCalib(chr(ord(STARTADDEEPROM)+k))))
+                                        Head.WriteCalib(chr(ord(STARTADDEEPROM)+(k*2)))
+                                        time.sleep(0.5) 
+                                        write_value(k_index[k],str(Head.ReadCalib(chr(ord(STARTADDEEPROM)+(k*2)))))
                                     else:
-                                        write_value(k_index[k],str(Head.ReadCalib(chr(ord(STARTADDEEPROM)+k))))
+                                        write_value(k_index[k],str(Head.ReadCalib(chr(ord(STARTADDEEPROM)+(k*2)))))
 		                    stdscr.nodelay(True)
 	except:
 		# In event of error, restore terminal to sane state.
